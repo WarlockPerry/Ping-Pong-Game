@@ -7,15 +7,9 @@ public class PaddleController : MonoBehaviour
     [SerializeField] KeyCode Up;
     [SerializeField] KeyCode down;
     [SerializeField] float speed;
+    float lowerBound = -4f;
+    float upperBound = 2.75f;
 
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
     void Update()
     {
         MovePaddle();
@@ -36,12 +30,11 @@ public class PaddleController : MonoBehaviour
 
     }
 
-
     private void PaddleBound()
     {
-        if (transform.position.z < -4f)
-            transform.position = new Vector3(transform.position.x, transform.position.y, -4f);
-        else if (transform.position.z > 2.6f)
-            transform.position = new Vector3(transform.position.x, transform.position.y, 2.6f);
+        if (transform.position.z < lowerBound)
+            transform.position = new Vector3(transform.position.x, transform.position.y, lowerBound);
+        else if (transform.position.z > upperBound)
+            transform.position = new Vector3(transform.position.x, transform.position.y, upperBound);
     }
 }

@@ -4,24 +4,32 @@ using UnityEngine;
 
 public class BallMovement : MonoBehaviour
 {
-    [SerializeField] Vector3 velocityBallDirection;
     [SerializeField] float speed;
-    public float speedB;
+    float maxSpeed = 10;
+    Vector3 velocityBallDirection; 
     Rigidbody ballRb;
+
+    public float speedB;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
-        if(speedB < 8)
+        //speed increment
+        if(speedB <= maxSpeed)
             speedB += SpawnManager.instance.BallSpeedIncrement();
-        speed = speedB * 50;
+        speed = speedB * speedRatio() ;
 
+        // random direction of ball
         transform.localRotation = Quaternion.Euler(GenerateRandomDirection());
         ballRb = GetComponent<Rigidbody>();
 
-        ballRb.AddForce(transform.localRotation * Vector3.right * speed) ;
+        // adding initial force to ball
+        if(SpawnManager.instance.wonR)
+            ballRb.AddForce(transform.localRotation * Vector3.left * speed) ;
+        else
+            ballRb.AddForce(transform.localRotation * Vector3.right * speed) ;
+
     }
 
     // Update is called once per frame
@@ -51,7 +59,6 @@ public class BallMovement : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-
         var direction = Vector3.Reflect(velocityBallDirection.normalized, collision.contacts[0].normal);
 
         ballRb.velocity = direction.normalized * speedB;
@@ -65,7 +72,7 @@ public class BallMovement : MonoBehaviour
             SpawnManager.instance.ballIsDestroyed = true;
             SpawnManager.instance.textR.gameObject.SetActive(true);
             SpawnManager.instance.scoreRR++;
-            SpawnManager.instance.scoreR.text = "Score : " + SpawnManager.instance.scoreRR;
+            SpawnManager.instance.wonR = true;
         }
         else if (other.gameObject.CompareTag("wallR"))
         {
@@ -73,9 +80,13 @@ public class BallMovement : MonoBehaviour
             SpawnManager.instance.ballIsDestroyed = true;
             SpawnManager.instance.textL.gameObject.SetActive(true);
             SpawnManager.instance.scoreLL++;
-            SpawnManager.instance.scoreL.text = "Score : " + SpawnManager.instance.scoreLL;
+            SpawnManager.instance.wonR = false;
         }
     }
 
-    
+    float speedRatio()
+    {
+        return speed / speedB;
+    }
+
 }
